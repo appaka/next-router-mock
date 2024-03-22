@@ -1,5 +1,13 @@
 # next-router-mock
 
+## 0.0.2
+
+- fix history dependency
+
+## 0.0.1 - @appaka/next-router-mock
+
+- added history and router.back() from https://github.com/ergofriend/next-router-mock/tree/add-history-support
+
 ## 0.9.12
 
 ### Patch Changes

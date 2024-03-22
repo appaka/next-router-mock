@@ -1,4 +1,4 @@
-# `next-router-mock`
+# `@appaka/next-router-mock`
 
 Fork from:
 1. https://github.com/scottrippey/next-router-mock
@@ -11,7 +11,7 @@ Inspired by [`react-router > MemoryRouter`](https://github.com/ReactTraining/rea
 
 Tested with NextJS v13, v12, v11, and v10.
 
-Install via NPM: `npm install --save-dev next-router-mock`
+Install via NPM: `npm install --save-dev @appaka/next-router-mock`
 
 
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
@@ -38,24 +38,24 @@ Install via NPM: `npm install --save-dev next-router-mock`
 # Usage with Jest
 
 ### Jest Configuration
-For unit tests, the `next-router-mock` module can be used as a drop-in replacement for `next/router`:
+For unit tests, the `@appaka/next-router-mock` module can be used as a drop-in replacement for `next/router`:
 
 ```js
-jest.mock('next/router', () => require('next-router-mock'));
+jest.mock('next/router', () => require('@appaka/next-router-mock'));
 ```
 
 You can do this once per spec file, or you can [do this globally using `setupFilesAfterEnv`](https://jestjs.io/docs/configuration/#setupfilesafterenv-array).
 
 ### Jest Example
 
-In your tests, use the router from `next-router-mock` to set the current URL and to make assertions.
+In your tests, use the router from `@appaka/next-router-mock` to set the current URL and to make assertions.
 
 ```jsx
 import { useRouter } from 'next/router';
 import { render, screen, fireEvent } from '@testing-library/react';
-import mockRouter from 'next-router-mock';
+import mockRouter from '@appaka/next-router-mock';
 
-jest.mock('next/router', () => jest.requireActual('next-router-mock'))
+jest.mock('next/router', () => jest.requireActual('@appaka/next-router-mock'))
 
 const ExampleComponent = ({ href = '' }) => {
   const router = useRouter();
@@ -66,7 +66,7 @@ const ExampleComponent = ({ href = '' }) => {
   );
 }
 
-describe('next-router-mock', () => {
+describe('@appaka/next-router-mock', () => {
   it('mocks the useRouter hook', () => {
     // Set the initial url:
     mockRouter.push("/initial-path");
@@ -94,7 +94,7 @@ describe('next-router-mock', () => {
 # Usage with Storybook
 
 ### Storybook Configuration
-Globally enable `next-router-mock` by adding the following webpack alias to your Storybook configuration.
+Globally enable `@appaka/next-router-mock` by adding the following webpack alias to your Storybook configuration.
 
 In `.storybook/main.js` add:
 ```js
@@ -102,7 +102,7 @@ module.exports = {
   webpackFinal: async (config, { configType }) => {
     config.resolve.alias = {
       ...config.resolve.alias,
-      "next/router": "next-router-mock",
+      "next/router": "@appaka/next-router-mock",
     };
     return config;
   },
@@ -119,7 +119,7 @@ In your individual stories, you might want to mock the current URL (eg. for test
 // ActiveLink.story.jsx
 import { action } from '@storybook/addon-actions';
 import { MemoryRouterProvider } 
-  from 'next-router-mock/MemoryRouterProvider/next-13';
+  from '@appaka/next-router-mock/MemoryRouterProvider/next-13';
 import { ActiveLink } from './active-link';
 
 export const ExampleStory = () => (
@@ -133,7 +133,7 @@ export const ExampleStory = () => (
 > Be sure to import from **a matching Next.js version**: 
 > ```
 > import { MemoryRouterProvider } 
->   from 'next-router-mock/MemoryRouterProvider/next-13.5';
+>   from '@appaka/next-router-mock/MemoryRouterProvider/next-13.5';
 > ```
 > Choose from `next-13.5`, `next-13`, `next-12`, or `next-11`.
 
@@ -148,9 +148,34 @@ The `MemoryRouterProvider` has the following optional properties:
   - `onRouteChangeComplete(url, { shallow })`
 
 
+# Mock `next/navigation`
+
+```tsx
+import mockRouter from '@appaka/next-router-mock'
+
+jest.mock('next/navigation', () => ({
+  ...jest.requireActual('next/navigation'),
+	useRouter: mockRouter,
+	useParams: () => {
+		const { query } = mockRouter
+		return query
+	},
+	useSearchParams: () => {
+		const { query } = mockRouter
+		const search = new URLSearchParams()
+
+		Object.entries(query).forEach(([key, value]) => {
+			search.append(key, `${value}`)
+		})
+
+		return search
+	},
+}))
+```
+
 # Compatibility with `next/link`
 
-To use `next-router-mock` with `next/link`, you must use a `<MemoryRouterProvider>` to wrap the test component.
+To use `@appaka/next-router-mock` with `next/link`, you must use a `<MemoryRouterProvider>` to wrap the test component.
 
 ### Example: `next/link` with React Testing Library
 
@@ -160,8 +185,8 @@ When rendering, simply supply the option `{ wrapper: MemoryRouterProvider }`
 import { render } from '@testing-library/react';
 import NextLink from 'next/link';
 
-import mockRouter from 'next-router-mock';
-import { MemoryRouterProvider } from 'next-router-mock/MemoryRouterProvider';
+import mockRouter from '@appaka/next-router-mock';
+import { MemoryRouterProvider } from '@appaka/next-router-mock/MemoryRouterProvider';
 
 it('NextLink can be rendered', () => {
   render(
@@ -181,8 +206,8 @@ When rendering, simply supply the option `{ wrapperComponent: MemoryRouterProvid
 import { shallow } from 'enzyme';
 import NextLink from 'next/link';
 
-import mockRouter from 'next-router-mock';
-import { MemoryRouterProvider } from 'next-router-mock/MemoryRouterProvider';
+import mockRouter from '@appaka/next-router-mock';
+import { MemoryRouterProvider } from '@appaka/next-router-mock/MemoryRouterProvider';
 
 it('NextLink can be rendered', () => {
   const wrapper = shallow(
@@ -205,7 +230,7 @@ In Storybook, you must wrap your component with the `<MemoryRouterProvider>` com
 import NextLink from 'next/link';
 import { action } from '@storybook/addon-actions';
 
-import { MemoryRouterProvider } from 'next-router-mock/MemoryRouterProvider/next-13.5';
+import { MemoryRouterProvider } from '@appaka/next-router-mock/MemoryRouterProvider/next-13.5';
 
 export const ExampleStory = () => (
   <MemoryRouterProvider url="/initial">
@@ -220,7 +245,7 @@ Global example:
 
 ```
 // .storybook/preview.js
-import { MemoryRouterProvider } from 'next-router-mock/MemoryRouterProvider';
+import { MemoryRouterProvider } from '@appaka/next-router-mock/MemoryRouterProvider';
 
 export const decorators = [
   (Story) => <MemoryRouterProvider><Story /></MemoryRouterProvider>
@@ -230,12 +255,12 @@ export const decorators = [
 
 # Dynamic Routes
 
-By default, `next-router-mock` does not know about your dynamic routes (eg. files like `/pages/[id].js`).
+By default, `@appaka/next-router-mock` does not know about your dynamic routes (eg. files like `/pages/[id].js`).
 To test code that uses dynamic routes, you must add the routes manually, like so:
 
 ```typescript
-import mockRouter from "next-router-mock";
-import { createDynamicRouteParser } from "next-router-mock/dynamic-routes";
+import mockRouter from "@appaka/next-router-mock";
+import { createDynamicRouteParser } from "@appaka/next-router-mock/dynamic-routes";
 
 mockRouter.useParser(createDynamicRouteParser([
   // These paths should match those found in the `/pages` folder:
@@ -257,10 +282,10 @@ it('should parse dynamic routes', () => {
 
 # Sync vs Async
 
-By default, `next-router-mock` handles route changes synchronously. This is convenient for testing, and works for most
+By default, `@appaka/next-router-mock` handles route changes synchronously. This is convenient for testing, and works for most
 use-cases.  
 However, Next normally handles route changes asynchronously, and in certain cases you might actually rely on that
-behavior. If that's the case, you can use `next-router-mock/async`. Tests will need to account for the async behavior
+behavior. If that's the case, you can use `@appaka/next-router-mock/async`. Tests will need to account for the async behavior
 too; for example:
 
 ```jsx
