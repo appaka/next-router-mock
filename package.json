@@ -1,6 +1,6 @@
 {
 	"name": "@appaka/next-router-mock",
-	"version": "0.0.2",
+	"version": "0.0.3",
 	"description": "Mock implementation of the Next.js Router",
 	"main": "dist/index",
 	"files": [
