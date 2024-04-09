@@ -1,5 +1,9 @@
 # next-router-mock
 
+## 0.0.3
+
+- Add support for parsing `search` parameter for URLs
+
 ## 0.0.2
 
 - fix history dependency
